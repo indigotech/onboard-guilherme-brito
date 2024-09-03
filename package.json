@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "tsc",
     "dev": "nodemon",
-    "start": "npm run compile && node ./dist/index.js"
+    "start": "npm run compile && node ./dist/index.js",
+    "lint": "npx eslint ."
   },
   "repository": {
     "type": "git",
@@ -25,8 +26,17 @@
     "graphql": "16.9.0"
   },
   "devDependencies": {
+    "@eslint/js": "9.9.1",
     "@types/node": "22.5.2",
+    "@typescript-eslint/eslint-plugin": "8.4.0",
+    "@typescript-eslint/parser": "8.4.0",
+    "eslint": "9.9.1",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-plugin-prettier": "5.2.1",
+    "globals": "15.9.0",
     "nodemon": "3.1.4",
-    "typescript": "5.5.4"
+    "prettier": "3.3.3",
+    "typescript": "5.5.4",
+    "typescript-eslint": "8.4.0"
   }
 }
