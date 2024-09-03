@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "Este é o projeto feito por `Guilherme Brito` durante o período de onboard na Taqtile. Trata-se do desenvolvimento de uma aplicação Back-end simples, a fim de trabalhar conceitos importantes para a integração em projetos da empresa de maneira prática.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "compile": "tsc",
+    "dev": "nodemon",
+    "start": "npm run compile && node ./dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -18,8 +21,12 @@
   },
   "homepage": "https://github.com/indigotech/onboard-guilherme-brito#readme",
   "dependencies": {
-    "express": "4.19.2",
-    "graphql": "16.9.0",
-    "graphql-http": "1.22.1"
+    "@apollo/server": "4.11.0",
+    "graphql": "16.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.5.2",
+    "nodemon": "3.1.4",
+    "typescript": "5.5.4"
   }
 }
