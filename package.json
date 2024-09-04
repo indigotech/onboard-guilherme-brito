@@ -9,7 +9,7 @@
     "compile": "tsc",
     "dev": "nodemon",
     "start": "npm run compile && node ./dist/index.js",
-    "lint": "npx eslint ."
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
