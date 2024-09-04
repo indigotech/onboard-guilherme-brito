@@ -9,17 +9,17 @@ const typeDefs = `#graphql
 
 const resolvers = {
   Query: {
-    hello: () => "Hello World"
-  }
+    hello: () => 'Hello World',
+  },
 };
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers
+  resolvers,
 });
 
 const { url } = await startStandaloneServer(server, {
-  listen: { port: 4000 }
+  listen: { port: 4000 },
 });
 
 console.log(`Server started at: ${url}`);
