@@ -1,5 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
+import { PrismaClient } from '@prisma/client';
 
 const typeDefs = `#graphql
   type Query {
@@ -32,16 +33,24 @@ interface UserInput {
   birthDate: string;
 }
 
+const prisma = new PrismaClient();
+
 const resolvers = {
   Query: {
     hello: () => 'Hello World',
   },
   Mutation: {
-    createUser: (_, args: { data: UserInput }) => {
-      return {
-        id: 1,
-        ...args.data,
-      };
+    createUser: async (_, args: { data: UserInput }) => {
+      const userData = args.data;
+
+      return await prisma.user.create({
+        data: {
+          name: userData.name,
+          email: userData.email,
+          password: userData.password,
+          birthDate: userData.birthDate,
+        },
+      });
     },
   },
 };
