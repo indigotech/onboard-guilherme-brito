@@ -41,15 +41,10 @@ const resolvers = {
   },
   Mutation: {
     createUser: async (_, args: { data: UserInput }) => {
-      const userData = args.data;
+      const { name, email, password, birthDate } = args.data;
 
-      return await prisma.user.create({
-        data: {
-          name: userData.name,
-          email: userData.email,
-          password: userData.password,
-          birthDate: userData.birthDate,
-        },
+      return prisma.user.create({
+        data: { name, email, password, birthDate },
       });
     },
   },
