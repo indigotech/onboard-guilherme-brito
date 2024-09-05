@@ -25,7 +25,9 @@ export const isEmailUnique = async (email: string) => {
 };
 
 export const isBirthDateValid = (birthDate: string) => {
-  if (!/^(0[1-9]|[1-2][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d\d$/.test(birthDate)) {
+  const BIRTH_DATE_REGEX = /^(0[1-9]|[1-2][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d\d$/;
+
+  if (!BIRTH_DATE_REGEX.test(birthDate)) {
     throw new Error(`A data ${birthDate} é inválida. O formato suportado é dd/mm/yyyy`);
   }
 };
