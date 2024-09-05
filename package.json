@@ -5,10 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run compile && mocha ./dist/test/**.js",
     "compile": "tsc",
     "dev": "nodemon",
-    "start": "npm run compile && node ./dist/index.js",
+    "start": "npm run compile && node ./dist/src/index.js",
     "lint": "eslint ."
   },
   "repository": {
@@ -30,6 +30,7 @@
   "devDependencies": {
     "@eslint/js": "9.9.1",
     "@types/bcrypt": "5.0.2",
+    "@types/mocha": "^10.0.7",
     "@types/node": "22.5.2",
     "@typescript-eslint/eslint-plugin": "8.4.0",
     "@typescript-eslint/parser": "8.4.0",
@@ -37,6 +38,7 @@
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.2.1",
     "globals": "15.9.0",
+    "mocha": "10.7.3",
     "nodemon": "3.1.4",
     "prettier": "3.3.3",
     "prisma": "5.19.1",
