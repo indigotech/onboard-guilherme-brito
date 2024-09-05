@@ -11,8 +11,8 @@ export const startServer = async () => {
   });
 
   const { url } = await startStandaloneServer(server, {
-    listen: { port: 4000 },
+    listen: { port: parseInt(process.env.PORT) },
   });
 
-  console.log(`Server started at: ${url}`);
+  console.log(`Server started at: ${url} (Env: ${process.env.ENVIRONMENT})`);
 };

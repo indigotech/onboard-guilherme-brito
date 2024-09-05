@@ -1,6 +1,6 @@
 import { isBirthDateValid, isEmailUnique, isPasswordValid } from './utils/validators.js';
 import * as bcrypt from 'bcrypt';
-import prisma from './prisma-client.js';
+import { prisma } from './database.js';
 
 export const typeDefs = `#graphql
   type Query {

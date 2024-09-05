@@ -1,4 +1,4 @@
-import prisma from '../prisma-client.js';
+import { prisma } from '../database.js';
 
 export const isPasswordValid = (password: string) => {
   if (!(passwordHasValidLenght(password) && passwordHasDigitsAndLetters(password))) {
