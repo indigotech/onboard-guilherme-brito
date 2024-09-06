@@ -1,6 +1,7 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
-import { PrismaClient } from '@prisma/client';
+import { isPasswordValid, isEmailUnique, isBirthDateValid } from './utils/validators.js';
+import prisma from './prisma-client.js';
 
 const typeDefs = `#graphql
   type Query {
@@ -33,8 +34,6 @@ interface UserInput {
   birthDate: string;
 }
 
-const prisma = new PrismaClient();
-
 const resolvers = {
   Query: {
     hello: () => 'Hello World',
@@ -42,6 +41,10 @@ const resolvers = {
   Mutation: {
     createUser: async (_, args: { data: UserInput }) => {
       const { name, email, password, birthDate } = args.data;
+
+      isPasswordValid(password);
+      await isEmailUnique(email);
+      isBirthDateValid(birthDate);
 
       return prisma.user.create({
         data: { name, email, password, birthDate },
