@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import axios from 'axios';
 import { initializeDatabaseInstance, prisma } from '../src/database.js';
 
-const LOCAL_SERVER_URL = 'http://localhost:4001';
+const LOCAL_SERVER_URL = `http://localhost:${process.env.PORT}`;
 
 describe('Onboard Guilherme Brito', () => {
   describe('#core', () => {
