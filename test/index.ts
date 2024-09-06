@@ -65,15 +65,9 @@ describe('Onboard Guilherme Brito', () => {
 
       const {
         data: {
-          data: {
-            createUser: { name, email, birthDate },
-          },
+          data: { createUser },
         },
       } = await axios.post(LOCAL_SERVER_URL, graphqlMutationRequestBody);
-
-      expect(name).to.be.equal('guilherme');
-      expect(email).to.be.equal('teste@taqtile.com.br');
-      expect(birthDate).to.be.equal('25/04/2003');
 
       const dbUser = await prisma.user.findUnique({
         where: {
@@ -86,6 +80,13 @@ describe('Onboard Guilherme Brito', () => {
       expect(dbUser.birthDate).to.be.equal('25/04/2003');
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(bcrypt.compareSync('senha123', dbUser.password)).to.be.true;
+
+      expect(createUser).to.be.deep.equal({
+        id: dbUser.id,
+        name: 'guilherme',
+        email: 'teste@taqtile.com.br',
+        birthDate: '25/04/2003',
+      });
     });
   });
 });
