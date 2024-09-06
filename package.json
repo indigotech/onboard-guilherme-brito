@@ -5,10 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "npm run compile && mocha ./dist/test/**.js",
-    "compile": "tsc",
+    "test": "mocha --loader=tsx ./test/**.ts",
     "dev": "nodemon",
-    "start": "npm run compile && node ./dist/src/index.js",
+    "start": "tsx ./src/index.ts",
     "lint": "eslint ."
   },
   "repository": {
@@ -43,6 +42,7 @@
     "nodemon": "3.1.4",
     "prettier": "3.3.3",
     "prisma": "5.19.1",
+    "tsx": "4.19.0",
     "typescript": "5.5.4",
     "typescript-eslint": "8.4.0"
   }
