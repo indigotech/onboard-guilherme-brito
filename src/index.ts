@@ -2,6 +2,7 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { isPasswordValid, isEmailUnique, isBirthDateValid } from './utils/validators.js';
 import prisma from './prisma-client.js';
+import * as bcrypt from 'bcrypt';
 
 const typeDefs = `#graphql
   type Query {
@@ -34,6 +35,8 @@ interface UserInput {
   birthDate: string;
 }
 
+const HASH_ROUNDS = 10;
+
 const resolvers = {
   Query: {
     hello: () => 'Hello World',
@@ -46,8 +49,10 @@ const resolvers = {
       await isEmailUnique(email);
       isBirthDateValid(birthDate);
 
+      const encryptedPassword = await bcrypt.hash(password, HASH_ROUNDS);
+
       return prisma.user.create({
-        data: { name, email, password, birthDate },
+        data: { name, email, password: encryptedPassword, birthDate },
       });
     },
   },
