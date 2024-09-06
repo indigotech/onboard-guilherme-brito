@@ -4,4 +4,5 @@ export let prisma: PrismaClient;
 
 export const initializeDatabaseInstance = () => {
   prisma = new PrismaClient();
+  prisma.$connect();
 };
