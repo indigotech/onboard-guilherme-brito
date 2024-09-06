@@ -5,9 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha --loader=tsx ./test/**.ts",
+    "migrate-test-db": "dotenvx run -f test.env -- prisma migrate dev --name init",
+    "test": "dotenvx run -f test.env -- mocha --loader=tsx ./test/**.ts",
     "dev": "nodemon",
-    "start": "tsx ./src/index.ts",
+    "start": "dotenvx run -f .env -- tsx ./src/index.ts",
     "lint": "eslint ."
   },
   "repository": {
@@ -22,6 +23,7 @@
   "homepage": "https://github.com/indigotech/onboard-guilherme-brito#readme",
   "dependencies": {
     "@apollo/server": "4.11.0",
+    "@dotenvx/dotenvx": "1.14.0",
     "@prisma/client": "5.19.1",
     "bcrypt": "5.1.1",
     "graphql": "16.9.0"

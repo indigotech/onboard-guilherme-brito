@@ -2,8 +2,9 @@ import { describe, it, before, after } from 'mocha';
 import { startServer, server } from '../src/server.js';
 import { expect } from 'chai';
 import axios from 'axios';
+import { initializeDatabaseInstance, prisma } from '../src/database.js';
 
-const LOCAL_SERVER_URL = 'http://localhost:4000';
+const LOCAL_SERVER_URL = `http://localhost:${process.env.PORT}`;
 
 describe('Onboard Guilherme Brito', () => {
   describe('#core', () => {
@@ -12,7 +13,8 @@ describe('Onboard Guilherme Brito', () => {
 
   describe('#e2e apis', () => {
     before(async () => {
-      await startServer();
+      initializeDatabaseInstance();
+      await Promise.all([prisma.$connect(), startServer()]);
     });
 
     after(() => {
