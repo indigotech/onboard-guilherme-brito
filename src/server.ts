@@ -2,8 +2,10 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { typeDefs, resolvers } from './graphql.js';
 
+export let server: ApolloServer;
+
 export const startServer = async () => {
-  const server = new ApolloServer({
+  server = new ApolloServer({
     typeDefs,
     resolvers,
   });
