@@ -1,4 +1,4 @@
-import { before, after } from 'mocha';
+import { before, after, afterEach } from 'mocha';
 import { startServer, server } from '../src/server.js';
 import { startDatabase, prisma } from '../src/database.js';
 
@@ -14,4 +14,8 @@ import './login-test.js';
 
 after(async () => {
   await Promise.all([prisma.$disconnect(), server.stop()]);
+});
+
+afterEach(async () => {
+  await prisma.user.deleteMany();
 });

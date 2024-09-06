@@ -1,4 +1,4 @@
-import { describe, it, afterEach } from 'mocha';
+import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import axios from 'axios';
 import { prisma } from '../src/database.js';
@@ -32,10 +32,6 @@ const createUserMutationRequest = (input: UserInput) => {
 };
 
 describe('#create user mutation', () => {
-  afterEach(async () => {
-    await prisma.user.deleteMany();
-  });
-
   it('should create a user with the correct informations', async () => {
     const {
       data: {

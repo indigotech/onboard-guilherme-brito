@@ -4,6 +4,8 @@ export const INVALID_PASSWORD_MESSAGE =
   'A senha passada é inválida. Ela deve conter pelo menos 6 letras e ser composta por números e letras';
 export const EXISTING_EMAIL_MESSAGE = 'Já existe um usuário cadastrado com este email';
 export const INVALID_BIRTH_DATE_MESSAGE = 'A data de nascimento fornecida é inválida. O formato suportado é dd/mm/yyyy';
+export const EMAIL_NOT_FOUND_MESSAGE = 'Não existe nenhum usuário com o email fornecido. Tente informar outro email';
+export const INCORRECT_PASSWORD_MESSAGE = 'A senha fornecida está incorreta. Tente novamente';
 
 export const isPasswordValid = (password: string) => {
   if (!(passwordHasValidLenght(password) && passwordHasDigitsAndLetters(password))) {
