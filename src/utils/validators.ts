@@ -3,7 +3,7 @@ import prisma from '../prisma-client.js';
 export const isPasswordValid = (password: string) => {
   if (!(passwordHasValidLenght(password) && passwordHasDigitsAndLetters(password))) {
     throw new Error(
-      `A senha ${password} é inválida. Ela deve conter pelo menos 6 letras e ser composta por números e letras`,
+      `A senha passada é inválida. Ela deve conter pelo menos 6 letras e ser composta por números e letras`,
     );
   }
 };
@@ -20,7 +20,7 @@ export const isEmailUnique = async (email: string) => {
   });
 
   if (user) {
-    throw new Error(`Já existe um usuário cadastrado com o email ${email}`);
+    throw new Error(`Já existe um usuário cadastrado com este email`);
   }
 };
 
@@ -28,6 +28,6 @@ export const isBirthDateValid = (birthDate: string) => {
   const BIRTH_DATE_REGEX = /^(0[1-9]|[1-2][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d\d$/;
 
   if (!BIRTH_DATE_REGEX.test(birthDate)) {
-    throw new Error(`A data ${birthDate} é inválida. O formato suportado é dd/mm/yyyy`);
+    throw new Error(`A data de nascimento fornecida é inválida. O formato suportado é dd/mm/yyyy`);
   }
 };
