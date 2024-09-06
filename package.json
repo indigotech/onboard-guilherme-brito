@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "migrate-test-db": "dotenvx run -f test.env -- prisma migrate dev --name init",
-    "test": "dotenvx run -f test.env -- mocha --loader=tsx ./test/**.ts",
+    "test": "dotenvx run -f test.env -- mocha --loader=tsx ./test/index.ts",
     "dev": "nodemon",
     "start": "dotenvx run -f .env -- tsx ./src/index.ts",
     "lint": "eslint ."

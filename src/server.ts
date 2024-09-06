@@ -1,6 +1,8 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
-import { typeDefs, resolvers, formatError } from './graphql.js';
+import { formatError } from './error-handler.js';
+import { typeDefs } from './schema.js';
+import { resolvers } from './resolvers/resolvers.js';
 
 export let server: ApolloServer;
 
