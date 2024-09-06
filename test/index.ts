@@ -1,5 +1,6 @@
 import { describe, it, before, after } from 'mocha';
 import { startServer, server } from '../src/server.js';
+import { expect } from 'chai';
 import axios from 'axios';
 
 const LOCAL_SERVER_URL = 'http://localhost:4000';
@@ -25,7 +26,7 @@ describe('Onboard Guilherme Brito', () => {
         variables: {},
       };
       const res = await axios.post(LOCAL_SERVER_URL, graphqlQuery);
-      console.log(res.data);
+      expect(res.data.data.hello).to.be.equal('Hello World');
     });
   });
 });
