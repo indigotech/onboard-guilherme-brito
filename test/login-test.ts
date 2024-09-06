@@ -3,7 +3,7 @@ import { LOCAL_SERVER_URL } from './index.js';
 import { expect } from 'chai';
 import { LoginInput } from '../src/resolvers/login-resolver.js';
 
-const loginMutationRequest = async (email: string, password: string) => {
+const loginMutationRequest = async (input: LoginInput) => {
   const graphqlMutation = `#graphql
     mutation Login($data: LoginInput!) {
       login(data: $data) {
@@ -17,24 +17,25 @@ const loginMutationRequest = async (email: string, password: string) => {
       }
     }`;
 
-  const loginInput: LoginInput = { email, password };
-
   const graphqlMutationRequestBody = {
     operationName: 'Login',
     query: graphqlMutation,
-    variables: { data: loginInput },
+    variables: { data: input },
   };
 
   return axios.post(LOCAL_SERVER_URL, graphqlMutationRequestBody);
 };
 
 describe('#login mutation', () => {
-  it('should create a user with the correct informations', async () => {
+  it('should return the propper informations from login', async () => {
     const {
       data: {
         data: { login },
       },
-    } = await loginMutationRequest('teste@@taqtile.com.br', 'senha123');
+    } = await loginMutationRequest({
+      email: 'teste@@taqtile.com.br',
+      password: 'senha123',
+    });
 
     expect(login).to.be.deep.equal({
       user: {

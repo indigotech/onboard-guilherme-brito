@@ -11,7 +11,7 @@ import {
 } from '../src/utils/validators.js';
 import { LOCAL_SERVER_URL } from './index.js';
 
-const createUserMutationRequest = (email: string, name: string, password: string, birthDate: string) => {
+const createUserMutationRequest = (input: UserInput) => {
   const graphqlMutation = `#graphql
     mutation CreateUser($data: UserInput!) {
       createUser(data: $data) {
@@ -21,12 +21,11 @@ const createUserMutationRequest = (email: string, name: string, password: string
         name
       }
     }`;
-  const userInput: UserInput = { birthDate, email, name, password };
 
   const graphqlMutationRequestBody = {
     operationName: 'CreateUser',
     query: graphqlMutation,
-    variables: { data: userInput },
+    variables: { data: input },
   };
 
   return axios.post(LOCAL_SERVER_URL, graphqlMutationRequestBody);
@@ -42,7 +41,12 @@ describe('#create user mutation', () => {
       data: {
         data: { createUser },
       },
-    } = await createUserMutationRequest('teste@taqtile.com.br', 'guilherme', 'senha123', '25/04/2003');
+    } = await createUserMutationRequest({
+      email: 'teste@taqtile.com.br',
+      name: 'guilherme',
+      password: 'senha123',
+      birthDate: '25/04/2003',
+    });
 
     const dbUser = await prisma.user.findUnique({
       where: {
@@ -67,7 +71,12 @@ describe('#create user mutation', () => {
   it('should not create a user with invalid password', async () => {
     const {
       data: { errors },
-    } = await createUserMutationRequest('teste@taqtile.com.br', 'guilherme', '123', '25/04/2003');
+    } = await createUserMutationRequest({
+      email: 'teste@taqtile.com.br',
+      name: 'guilherme',
+      password: '123',
+      birthDate: '25/04/2003',
+    });
 
     const dbUser = await prisma.user.findUnique({
       where: {
@@ -89,7 +98,12 @@ describe('#create user mutation', () => {
   it('should not create a user with invalid birthDate', async () => {
     const {
       data: { errors },
-    } = await createUserMutationRequest('teste@taqtile.com.br', 'guilherme', 'senha123', '25-04-2003');
+    } = await createUserMutationRequest({
+      email: 'teste@taqtile.com.br',
+      name: 'guilherme',
+      password: 'senha123',
+      birthDate: '25-04-2003',
+    });
 
     const dbUser = await prisma.user.findUnique({
       where: {
@@ -124,7 +138,12 @@ describe('#create user mutation', () => {
 
     const {
       data: { errors },
-    } = await createUserMutationRequest('teste@taqtile.com.br', 'guilherme', 'senha123', '25/04/2003');
+    } = await createUserMutationRequest({
+      email: 'teste@taqtile.com.br',
+      name: 'guilherme',
+      password: 'senha123',
+      birthDate: '25/04/2003',
+    });
 
     usersWithExistingEmailCount = await prisma.user.count({
       where: {
