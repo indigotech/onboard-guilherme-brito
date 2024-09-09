@@ -11,12 +11,6 @@ export interface LoginInput {
   rememberMe?: boolean;
 }
 
-export interface JwtTokenPayload {
-  id: number;
-  iat: number;
-  exp: number;
-}
-
 export const loginResolver = async (_, args: { data: LoginInput }) => {
   const { email, password, rememberMe } = args.data;
 
@@ -48,7 +42,7 @@ const checkPassword = async (password: string, encryptedPassword: string) => {
   }
 };
 
-const generateToken = (id: number, rememberMe: boolean) => {
+export const generateToken = (id: number, rememberMe: boolean) => {
   const expiresIn = rememberMe ? EXTENDED_JWT_TOKEN_EXPIRATION : JWT_TOKEN_EXPIRATION;
   return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn });
 };
