@@ -3,11 +3,12 @@ import { prisma } from '../database.js';
 import * as bcrypt from 'bcrypt';
 import { EMAIL_NOT_FOUND_MESSAGE, INCORRECT_PASSWORD_MESSAGE } from '../utils/validators.js';
 import jwt from 'jsonwebtoken';
-import { JWT_TOKEN_EXPIRATION } from '../utils/consts.js';
+import { EXTENDED_JWT_TOKEN_EXPIRATION, JWT_TOKEN_EXPIRATION } from '../utils/consts.js';
 
 export interface LoginInput {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export interface JwtTokenPayload {
@@ -17,12 +18,12 @@ export interface JwtTokenPayload {
 }
 
 export const loginResolver = async (_, args: { data: LoginInput }) => {
-  const { email, password } = args.data;
+  const { email, password, rememberMe } = args.data;
 
   const user = await findUserByEmail(email);
   await checkPassword(password, user.password);
 
-  const token = generateToken(user.id);
+  const token = generateToken(user.id, rememberMe);
 
   return { user, token };
 };
@@ -47,4 +48,7 @@ const checkPassword = async (password: string, encryptedPassword: string) => {
   }
 };
 
-const generateToken = (id: number) => jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: JWT_TOKEN_EXPIRATION });
+const generateToken = (id: number, rememberMe: boolean) => {
+  const expiresIn = rememberMe ? EXTENDED_JWT_TOKEN_EXPIRATION : JWT_TOKEN_EXPIRATION;
+  return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn });
+};
