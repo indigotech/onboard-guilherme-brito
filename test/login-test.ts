@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { LOCAL_SERVER_URL } from './index.js';
 import { expect } from 'chai';
-import { LoginInput } from '../src/resolvers/login-resolver.js';
+import { JwtTokenPayload, LoginInput } from '../src/resolvers/login-resolver.js';
 import { prisma } from '../src/database.js';
 import * as bcrypt from 'bcrypt';
 import { EMAIL_NOT_FOUND_MESSAGE, INCORRECT_PASSWORD_MESSAGE } from '../src/utils/validators.js';
+import jwt from 'jsonwebtoken';
+import { JWT_TOKEN_EXPIRATION } from '../src/utils/consts.js';
 
 const loginMutationRequest = async (input: LoginInput) => {
   const graphqlMutation = `#graphql
@@ -50,6 +52,9 @@ describe('#login mutation', () => {
       password: LOGIN_PASSWORD,
     });
 
+    const token = login.token;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY) as JwtTokenPayload;
+
     expect(login).to.be.deep.equal({
       user: {
         id,
@@ -57,8 +62,10 @@ describe('#login mutation', () => {
         email,
         birthDate,
       },
-      token: 'mockToken',
+      token,
     });
+    expect(decodedToken.id).to.be.equal(id);
+    expect(decodedToken.exp - decodedToken.iat).to.be.equal(JWT_TOKEN_EXPIRATION);
   });
 
   it('should not return user information with unregistered email in login', async () => {

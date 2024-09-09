@@ -26,12 +26,14 @@
     "@dotenvx/dotenvx": "1.14.0",
     "@prisma/client": "5.19.1",
     "bcrypt": "5.1.1",
-    "graphql": "16.9.0"
+    "graphql": "16.9.0",
+    "jsonwebtoken": "9.0.2"
   },
   "devDependencies": {
     "@eslint/js": "9.9.1",
     "@types/bcrypt": "5.0.2",
     "@types/chai": "4.3.19",
+    "@types/jsonwebtoken": "9.0.6",
     "@types/mocha": "10.0.7",
     "@types/node": "22.5.2",
     "@typescript-eslint/eslint-plugin": "8.4.0",
