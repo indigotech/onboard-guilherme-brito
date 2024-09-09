@@ -15,7 +15,7 @@ const createMockUser = async (): Promise<UserInput> => {
   };
 };
 
-const generateUsers = async (count: number) => {
+export const generateUsers = async (count: number) => {
   const users = await Promise.all(
     faker.helpers.multiple(createMockUser, {
       count,
