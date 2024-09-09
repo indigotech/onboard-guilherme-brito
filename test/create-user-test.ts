@@ -65,9 +65,7 @@ describe('#create user mutation', () => {
   });
 
   it('should not create a user with invalid password', async () => {
-    const {
-      data: { errors },
-    } = await createUserMutationRequest({
+    const { data } = await createUserMutationRequest({
       email: 'teste@taqtile.com.br',
       name: 'guilherme',
       password: '123',
@@ -83,18 +81,19 @@ describe('#create user mutation', () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(dbUser).to.be.null;
 
-    expect(errors).to.be.deep.equal([
-      {
-        code: 400,
-        message: INVALID_PASSWORD_MESSAGE,
-      },
-    ]);
+    expect(data).to.be.deep.equal({
+      data: null,
+      errors: [
+        {
+          code: 400,
+          message: INVALID_PASSWORD_MESSAGE,
+        },
+      ],
+    });
   });
 
   it('should not create a user with invalid birthDate', async () => {
-    const {
-      data: { errors },
-    } = await createUserMutationRequest({
+    const { data } = await createUserMutationRequest({
       email: 'teste@taqtile.com.br',
       name: 'guilherme',
       password: 'senha123',
@@ -110,12 +109,15 @@ describe('#create user mutation', () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(dbUser).to.be.null;
 
-    expect(errors).to.be.deep.equal([
-      {
-        code: 400,
-        message: INVALID_BIRTH_DATE_MESSAGE,
-      },
-    ]);
+    expect(data).to.be.deep.equal({
+      data: null,
+      errors: [
+        {
+          code: 400,
+          message: INVALID_BIRTH_DATE_MESSAGE,
+        },
+      ],
+    });
   });
 
   it('should not create a user with email that exists in database', async () => {
@@ -132,9 +134,7 @@ describe('#create user mutation', () => {
 
     expect(usersWithExistingEmailCount).to.be.equal(1);
 
-    const {
-      data: { errors },
-    } = await createUserMutationRequest({
+    const { data } = await createUserMutationRequest({
       email: 'teste@taqtile.com.br',
       name: 'guilherme',
       password: 'senha123',
@@ -149,11 +149,14 @@ describe('#create user mutation', () => {
 
     expect(usersWithExistingEmailCount).to.be.equal(1);
 
-    expect(errors).to.be.deep.equal([
-      {
-        code: 400,
-        message: EXISTING_EMAIL_MESSAGE,
-      },
-    ]);
+    expect(data).to.be.deep.equal({
+      data: null,
+      errors: [
+        {
+          code: 400,
+          message: EXISTING_EMAIL_MESSAGE,
+        },
+      ],
+    });
   });
 });

@@ -12,17 +12,9 @@ export const loginResolver = async (_, args: { data: LoginInput }) => {
   const { email, password } = args.data;
 
   const user = await findUserByEmail(email);
-  checkPassword(password, user.password);
+  await checkPassword(password, user.password);
 
-  return {
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      birthDate: user.birthDate,
-    },
-    token: 'mockToken',
-  };
+  return { user, token: 'mockToken' };
 };
 
 const findUserByEmail = async (email: string) => {
@@ -38,11 +30,9 @@ const findUserByEmail = async (email: string) => {
   }
 };
 
-const checkPassword = (password: string, encryptedPassword: string) => {
-  if (!isPasswordCorrect(password, encryptedPassword)) {
+const checkPassword = async (password: string, encryptedPassword: string) => {
+  const isPasswordCorrect = await bcrypt.compare(password, encryptedPassword);
+  if (!isPasswordCorrect) {
     throw new CustomHttpError(400, INCORRECT_PASSWORD_MESSAGE);
   }
 };
-
-const isPasswordCorrect = (password: string, encryptedPassword: string) =>
-  bcrypt.compareSync(password, encryptedPassword);

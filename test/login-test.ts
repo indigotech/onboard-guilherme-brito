@@ -71,19 +71,20 @@ describe('#login mutation', () => {
       data: { name: 'guilherme', email: REGISTERED_LOGIN_EMAIL, password: ENCRYPTED_PASSWORD, birthDate: '22/02/2000' },
     });
 
-    const {
-      data: { errors },
-    } = await loginMutationRequest({
+    const { data } = await loginMutationRequest({
       email: UNREGISTERED_LOGIN_EMAIL,
       password: LOGIN_PASSWORD,
     });
 
-    expect(errors).to.be.deep.equal([
-      {
-        code: 400,
-        message: EMAIL_NOT_FOUND_MESSAGE,
-      },
-    ]);
+    expect(data).to.be.deep.equal({
+      data: null,
+      errors: [
+        {
+          code: 400,
+          message: EMAIL_NOT_FOUND_MESSAGE,
+        },
+      ],
+    });
   });
 
   it('should not return user information with incorrect password in login', async () => {
@@ -96,18 +97,19 @@ describe('#login mutation', () => {
       data: { name: 'guilherme', email: LOGIN_EMAIL, password: ENCRYPTED_PASSWORD, birthDate: '22/02/2000' },
     });
 
-    const {
-      data: { errors },
-    } = await loginMutationRequest({
+    const { data } = await loginMutationRequest({
       email: LOGIN_EMAIL,
       password: INCORRECT_LOGIN_PASSWORD,
     });
 
-    expect(errors).to.be.deep.equal([
-      {
-        code: 400,
-        message: INCORRECT_PASSWORD_MESSAGE,
-      },
-    ]);
+    expect(data).to.be.deep.equal({
+      data: null,
+      errors: [
+        {
+          code: 400,
+          message: INCORRECT_PASSWORD_MESSAGE,
+        },
+      ],
+    });
   });
 });
