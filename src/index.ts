@@ -1,5 +1,5 @@
-import { initializeDatabaseInstance } from './database.js';
+import { startDatabase } from './database.js';
 import { startServer } from './server.js';
 
-initializeDatabaseInstance();
+startDatabase();
 startServer();
