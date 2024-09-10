@@ -8,6 +8,7 @@ export const EMAIL_NOT_FOUND_MESSAGE = 'Não existe nenhum usuário com o email 
 export const INCORRECT_PASSWORD_MESSAGE = 'A senha fornecida está incorreta. Tente novamente';
 export const UNAUTHORIZED_MESSAGE =
   'Operação não autorizada. É preciso realizar o login antes de realizar esta operação';
+export const USER_ID_NOT_FOUND = 'Não existe nenhum usuário com o id fornecido. Tente informar outro id';
 
 export const isPasswordValid = (password: string) => {
   if (!(passwordHasValidLenght(password) && passwordHasDigitsAndLetters(password))) {
