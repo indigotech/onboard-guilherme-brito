@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { LOCAL_SERVER_URL } from './index.js';
 import { expect } from 'chai';
-import { LoginInput } from '../src/resolvers/login-resolver.js';
+import { JwtTokenPayload, LoginInput } from '../src/resolvers/login-resolver.js';
 import { prisma } from '../src/database.js';
 import * as bcrypt from 'bcrypt';
 import { EMAIL_NOT_FOUND_MESSAGE, INCORRECT_PASSWORD_MESSAGE } from '../src/utils/validators.js';
+import jwt from 'jsonwebtoken';
+import { EXTENDED_JWT_TOKEN_EXPIRATION, JWT_TOKEN_EXPIRATION } from '../src/utils/consts.js';
 
 const loginMutationRequest = async (input: LoginInput) => {
   const graphqlMutation = `#graphql
@@ -32,7 +34,7 @@ const loginMutationRequest = async (input: LoginInput) => {
 const HASH_ROUNDS = 1;
 
 describe('#login mutation', () => {
-  it('should return the propper informations from successfull login', async () => {
+  it('should return the propper informations from successfull login without rememberMe parameter', async () => {
     const LOGIN_EMAIL = 'teste@taqtile.com.br';
     const LOGIN_PASSWORD = 'senha123';
     const ENCRYPTED_PASSWORD = bcrypt.hashSync(LOGIN_PASSWORD, HASH_ROUNDS);
@@ -50,6 +52,9 @@ describe('#login mutation', () => {
       password: LOGIN_PASSWORD,
     });
 
+    const token = login.token;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY) as JwtTokenPayload;
+
     expect(login).to.be.deep.equal({
       user: {
         id,
@@ -57,8 +62,45 @@ describe('#login mutation', () => {
         email,
         birthDate,
       },
-      token: 'mockToken',
+      token,
     });
+    expect(decodedToken.id).to.be.equal(id);
+    expect(decodedToken.exp - decodedToken.iat).to.be.equal(JWT_TOKEN_EXPIRATION);
+  });
+
+  it('should return the propper informations and extended expiration token time from successfull login when rememberMe equals true', async () => {
+    const LOGIN_EMAIL = 'teste@taqtile.com.br';
+    const LOGIN_PASSWORD = 'senha123';
+    const ENCRYPTED_PASSWORD = bcrypt.hashSync(LOGIN_PASSWORD, HASH_ROUNDS);
+
+    const { id, name, email, birthDate } = await prisma.user.create({
+      data: { name: 'guilherme', email: LOGIN_EMAIL, password: ENCRYPTED_PASSWORD, birthDate: '22/02/2000' },
+    });
+
+    const {
+      data: {
+        data: { login },
+      },
+    } = await loginMutationRequest({
+      email: LOGIN_EMAIL,
+      password: LOGIN_PASSWORD,
+      rememberMe: true,
+    });
+
+    const token = login.token;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY) as JwtTokenPayload;
+
+    expect(login).to.be.deep.equal({
+      user: {
+        id,
+        name,
+        email,
+        birthDate,
+      },
+      token,
+    });
+    expect(decodedToken.id).to.be.equal(id);
+    expect(decodedToken.exp - decodedToken.iat).to.be.equal(EXTENDED_JWT_TOKEN_EXPIRATION);
   });
 
   it('should not return user information with unregistered email in login', async () => {
