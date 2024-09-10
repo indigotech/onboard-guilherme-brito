@@ -2,7 +2,7 @@ export const typeDefs = `#graphql
   type Query {
     hello: String
     user(id: Int!): User!
-    users(limit: Int = 10): [User!]!
+    users(page: Int!, limit: Int = 10): UsersPagination!
   }
 
   type Mutation {
@@ -33,5 +33,13 @@ export const typeDefs = `#graphql
   type LoggedInUser {
     user: User!
     token: String!
+  }
+
+  type UsersPagination {
+    users: [User!]!
+    totalRecords: Int!
+    totalPages: Int!
+    nextPage: Int
+    previousPage: Int
   }
 `;

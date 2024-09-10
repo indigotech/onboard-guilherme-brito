@@ -2,25 +2,36 @@ import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import axios from 'axios';
 import { prisma } from '../src/database.js';
-import { INVALID_LIMIT_MESSAGE, UNAUTHORIZED_MESSAGE } from '../src/utils/validators.js';
+import {
+  INVALID_LIMIT_MESSAGE,
+  INVALID_PAGE_MESSAGE,
+  UNAUTHORIZED_MESSAGE,
+  WITHOUT_USERS_MESSAGE,
+} from '../src/utils/validators.js';
 import { LOCAL_SERVER_URL } from './index.js';
 import { generateToken } from '../src/resolvers/login-resolver.js';
 
-const getUsersQueryRequest = (token?: string, limit?: number) => {
+const getUsersQueryRequest = (page: number, token?: string, limit?: number) => {
   const graphqlQuery = `#graphql
-    query Users($limit: Int) {
-      users(limit: $limit) {
-        birthDate
-        email
-        id
-        name
+    query Users($page: Int!, $limit: Int) {
+      users(page: $page, limit: $limit) {
+        nextPage
+        previousPage
+        totalPages
+        totalRecords
+        users {
+          birthDate
+          email
+          id
+          name
+        }
       }
     }`;
 
   const graphqlQueryRequestBody = {
     operationName: 'Users',
     query: graphqlQuery,
-    variables: { limit },
+    variables: { page, limit },
   };
 
   return axios.post(LOCAL_SERVER_URL, graphqlQueryRequestBody, { headers: { Authorization: token } });
@@ -42,7 +53,7 @@ const generateUsers = (size: number) => {
 
 describe('#get users list query', () => {
   it('should not query users list without authorization token', async () => {
-    const { data } = await getUsersQueryRequest();
+    const { data } = await getUsersQueryRequest(1);
 
     expect(data).to.be.deep.equal({
       data: null,
@@ -55,7 +66,7 @@ describe('#get users list query', () => {
     });
   });
 
-  it('should query 10 users when limit parameter is not passed', async () => {
+  it('should query 10 first users when limit parameter is not passed and page is 1', async () => {
     const mockUsers = generateUsers(10);
     await prisma.user.createMany({
       data: mockUsers,
@@ -66,13 +77,19 @@ describe('#get users list query', () => {
       data: {
         data: { users },
       },
-    } = await getUsersQueryRequest(token);
+    } = await getUsersQueryRequest(1, token);
 
     mockUsers.forEach((user) => delete user.password);
-    expect(users).to.be.deep.equal(mockUsers);
+    expect(users).to.be.deep.equal({
+      users: mockUsers,
+      nextPage: null,
+      previousPage: null,
+      totalRecords: 10,
+      totalPages: 1,
+    });
   });
 
-  it('should query users list correctly when limit parameter is passed', async () => {
+  it('should query 5 first users correctly when limit parameter is 5 and page is 1', async () => {
     const mockUsers = generateUsers(10);
     await prisma.user.createMany({
       data: mockUsers,
@@ -83,16 +100,46 @@ describe('#get users list query', () => {
       data: {
         data: { users },
       },
-    } = await getUsersQueryRequest(token, 5);
+    } = await getUsersQueryRequest(1, token, 5);
 
     const expectedResponse = mockUsers.slice(0, 5);
     expectedResponse.forEach((user) => delete user.password);
-    expect(users).to.be.deep.equal(expectedResponse);
+    expect(users).to.be.deep.equal({
+      users: expectedResponse,
+      nextPage: 2,
+      previousPage: null,
+      totalRecords: 10,
+      totalPages: 2,
+    });
+  });
+
+  it('should query 5 final users correctly when limit parameter is 5 and page is 2', async () => {
+    const mockUsers = generateUsers(10);
+    await prisma.user.createMany({
+      data: mockUsers,
+    });
+
+    const token = generateToken(1, false);
+    const {
+      data: {
+        data: { users },
+      },
+    } = await getUsersQueryRequest(2, token, 5);
+
+    const expectedResponse = mockUsers.slice(5, 10);
+    expectedResponse.forEach((user) => delete user.password);
+    expect(users).to.be.deep.equal({
+      users: expectedResponse,
+      nextPage: null,
+      previousPage: 1,
+      totalRecords: 10,
+      totalPages: 2,
+    });
   });
 
   it('should return error with invalid limit passed', async () => {
     const token = generateToken(1, false);
-    const { data } = await getUsersQueryRequest(token, -1);
+    const { data } = await getUsersQueryRequest(1, token, -1);
 
     expect(data).to.be.deep.equal({
       data: null,
@@ -100,6 +147,55 @@ describe('#get users list query', () => {
         {
           code: 400,
           message: INVALID_LIMIT_MESSAGE,
+        },
+      ],
+    });
+  });
+
+  it('should return error with invalid page passed (non-positive)', async () => {
+    const token = generateToken(1, false);
+    const { data } = await getUsersQueryRequest(0, token);
+
+    expect(data).to.be.deep.equal({
+      data: null,
+      errors: [
+        {
+          code: 400,
+          message: INVALID_PAGE_MESSAGE,
+        },
+      ],
+    });
+  });
+
+  it('should return error with invalid page passed (page greater than current totalPages)', async () => {
+    const mockUsers = generateUsers(10);
+    await prisma.user.createMany({
+      data: mockUsers,
+    });
+
+    const token = generateToken(1, false);
+    const { data } = await getUsersQueryRequest(2, token);
+
+    expect(data).to.be.deep.equal({
+      data: null,
+      errors: [
+        {
+          code: 400,
+          message: INVALID_PAGE_MESSAGE,
+        },
+      ],
+    });
+  });
+
+  it('should return error when there are no users stored in database', async () => {
+    const token = generateToken(1, false);
+    const { data } = await getUsersQueryRequest(1, token);
+    expect(data).to.be.deep.equal({
+      data: null,
+      errors: [
+        {
+          code: 404,
+          message: WITHOUT_USERS_MESSAGE,
         },
       ],
     });
