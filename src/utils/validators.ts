@@ -9,6 +9,10 @@ export const INCORRECT_PASSWORD_MESSAGE = 'A senha fornecida está incorreta. Te
 export const UNAUTHORIZED_MESSAGE =
   'Operação não autorizada. É preciso realizar o login antes de realizar esta operação';
 export const USER_ID_NOT_FOUND = 'Não existe nenhum usuário com o id fornecido. Tente informar outro id';
+export const INVALID_LIMIT_MESSAGE =
+  'A quantidade de usuários a ser retornada deve ser positiva. Passe um valor válido';
+export const INVALID_PAGE_MESSAGE = 'O numéro de página passado é inválido. Tente novamente';
+export const WITHOUT_USERS_MESSAGE = 'Não existe nenhum usuário cadastrado no sistema.';
 
 export const isPasswordValid = (password: string) => {
   if (!(passwordHasValidLenght(password) && passwordHasDigitsAndLetters(password))) {

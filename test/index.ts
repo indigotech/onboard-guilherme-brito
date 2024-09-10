@@ -12,6 +12,7 @@ import './hello-test.js';
 import './create-user-test.js';
 import './login-test.js';
 import './query-user-test.js';
+import './query-users-test.js';
 
 after(async () => {
   await Promise.all([prisma.$disconnect(), server.stop()]);
