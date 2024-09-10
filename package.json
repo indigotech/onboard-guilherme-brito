@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "migrate-test-db": "dotenvx run -f test.env -- prisma migrate dev --name init",
+    "user-seeds": "dotenvx run -f .env -- tsx ./src/seeds/user-seeds.ts",
     "test": "dotenvx run -f test.env -- mocha --loader=tsx ./test/index.ts",
     "dev": "nodemon",
     "start": "dotenvx run -f .env -- tsx ./src/index.ts",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@eslint/js": "9.9.1",
+    "@faker-js/faker": "9.0.0",
     "@types/bcrypt": "5.0.2",
     "@types/chai": "4.3.19",
     "@types/jsonwebtoken": "9.0.6",
