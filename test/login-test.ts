@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { LOCAL_SERVER_URL } from './index.js';
 import { expect } from 'chai';
-import { JwtTokenPayload, LoginInput } from '../src/resolvers/login-resolver.js';
+import { LoginInput } from '../src/resolvers/login-resolver.js';
+import { AuthenticationTokenPayload } from '../src/authentication.js';
 import { prisma } from '../src/database.js';
 import * as bcrypt from 'bcrypt';
 import { EMAIL_NOT_FOUND_MESSAGE, INCORRECT_PASSWORD_MESSAGE } from '../src/utils/validators.js';
@@ -53,7 +54,7 @@ describe('#login mutation', () => {
     });
 
     const token = login.token;
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY) as JwtTokenPayload;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY) as AuthenticationTokenPayload;
 
     expect(login).to.be.deep.equal({
       user: {
@@ -88,7 +89,7 @@ describe('#login mutation', () => {
     });
 
     const token = login.token;
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY) as JwtTokenPayload;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY) as AuthenticationTokenPayload;
 
     expect(login).to.be.deep.equal({
       user: {

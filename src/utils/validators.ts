@@ -6,6 +6,8 @@ export const EXISTING_EMAIL_MESSAGE = 'Já existe um usuário cadastrado com est
 export const INVALID_BIRTH_DATE_MESSAGE = 'A data de nascimento fornecida é inválida. O formato suportado é dd/mm/yyyy';
 export const EMAIL_NOT_FOUND_MESSAGE = 'Não existe nenhum usuário com o email fornecido. Tente informar outro email';
 export const INCORRECT_PASSWORD_MESSAGE = 'A senha fornecida está incorreta. Tente novamente';
+export const UNAUTHORIZED_MESSAGE =
+  'Operação não autorizada. É preciso realizar o login antes de realizar esta operação';
 
 export const isPasswordValid = (password: string) => {
   if (!(passwordHasValidLenght(password) && passwordHasDigitsAndLetters(password))) {

@@ -1,6 +1,12 @@
+import { ContextPayload } from '../authentication.js';
 import { prisma } from '../database.js';
 import { CustomHttpError } from '../errors.js';
-import { isPasswordValid, isBirthDateValid, EXISTING_EMAIL_MESSAGE } from '../utils/validators.js';
+import {
+  isPasswordValid,
+  isBirthDateValid,
+  EXISTING_EMAIL_MESSAGE,
+  UNAUTHORIZED_MESSAGE,
+} from '../utils/validators.js';
 import * as bcrypt from 'bcrypt';
 
 export interface UserInput {
@@ -12,7 +18,12 @@ export interface UserInput {
 
 const HASH_ROUNDS = 10;
 
-export const createUserResolver = async (_, args: { data: UserInput }) => {
+export const createUserResolver = async (_, args: { data: UserInput }, contextValue: ContextPayload) => {
+  const { userInfo } = contextValue;
+  if (!userInfo) {
+    throw new CustomHttpError(401, UNAUTHORIZED_MESSAGE);
+  }
+
   const { name, email, password, birthDate } = args.data;
 
   isPasswordValid(password);
