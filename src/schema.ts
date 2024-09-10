@@ -28,6 +28,7 @@ export const typeDefs = `#graphql
     name: String!
     email: String!
     birthDate: String!
+    addresses: [Address!]!
   }
 
   type LoggedInUser {
@@ -41,5 +42,15 @@ export const typeDefs = `#graphql
     totalPages: Int!
     nextPage: Int
     previousPage: Int
+  }
+
+  type Address {
+    id: Int!
+    postalCode: String!
+    street: String!
+    streetNumber: Int!
+    complement: String
+    city: String!
+    State: String!
   }
 `;

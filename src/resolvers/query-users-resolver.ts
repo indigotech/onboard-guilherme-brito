@@ -53,4 +53,7 @@ const findUsers = async (offset: number, limit: number) =>
     skip: offset,
     take: limit,
     orderBy: { name: 'asc' },
+    include: {
+      addresses: true,
+    },
   });
