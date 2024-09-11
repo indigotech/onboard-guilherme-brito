@@ -24,6 +24,15 @@ const getUsersQueryRequest = (page: number, token?: string, limit?: number) => {
           email
           id
           name
+          addresses {
+            State
+            city
+            complement
+            id
+            street
+            streetNumber
+            postalCode
+          }
         }
       }
     }`;
@@ -38,17 +47,47 @@ const getUsersQueryRequest = (page: number, token?: string, limit?: number) => {
 };
 
 const generateUsers = (size: number) => {
-  const users = [];
+  const mockCreateUsersData = [];
+  const expectedUsers = [];
   for (let index = 0; index < size; index++) {
-    users.push({
+    mockCreateUsersData.push({
       id: index,
       name: `user${index}`,
       email: `teste${index}@taqtile.com.br`,
       password: 'banana123',
       birthDate: '25/04/2003',
+      addresses: {
+        create: [
+          {
+            id: index,
+            city: 'São Paulo',
+            postalCode: '05036-165',
+            State: 'São Paulo',
+            street: 'Rua teste 123',
+            streetNumber: 98,
+          },
+        ],
+      },
+    });
+    expectedUsers.push({
+      id: index,
+      name: `user${index}`,
+      email: `teste${index}@taqtile.com.br`,
+      birthDate: '25/04/2003',
+      addresses: [
+        {
+          id: index,
+          city: 'São Paulo',
+          postalCode: '05036-165',
+          State: 'São Paulo',
+          street: 'Rua teste 123',
+          streetNumber: 98,
+          complement: null,
+        },
+      ],
     });
   }
-  return users;
+  return { mockCreateUsersData, expectedUsers };
 };
 
 describe('#get users list query', () => {
@@ -67,10 +106,14 @@ describe('#get users list query', () => {
   });
 
   it('should query 10 first users when limit parameter is not passed and page is 1', async () => {
-    const mockUsers = generateUsers(10);
-    await prisma.user.createMany({
-      data: mockUsers,
-    });
+    const { mockCreateUsersData, expectedUsers } = generateUsers(10);
+    await Promise.all(
+      mockCreateUsersData.map(async (createUserData) => {
+        await prisma.user.create({
+          data: createUserData,
+        });
+      }),
+    );
 
     const token = generateToken(1, false);
     const {
@@ -79,9 +122,8 @@ describe('#get users list query', () => {
       },
     } = await getUsersQueryRequest(1, token);
 
-    mockUsers.forEach((user) => delete user.password);
     expect(users).to.be.deep.equal({
-      users: mockUsers,
+      users: expectedUsers,
       nextPage: null,
       previousPage: null,
       totalRecords: 10,
@@ -90,10 +132,14 @@ describe('#get users list query', () => {
   });
 
   it('should query 5 first users correctly when limit parameter is 5 and page is 1', async () => {
-    const mockUsers = generateUsers(10);
-    await prisma.user.createMany({
-      data: mockUsers,
-    });
+    const { mockCreateUsersData, expectedUsers } = generateUsers(10);
+    await Promise.all(
+      mockCreateUsersData.map(async (createUserData) => {
+        await prisma.user.create({
+          data: createUserData,
+        });
+      }),
+    );
 
     const token = generateToken(1, false);
     const {
@@ -102,10 +148,8 @@ describe('#get users list query', () => {
       },
     } = await getUsersQueryRequest(1, token, 5);
 
-    const expectedResponse = mockUsers.slice(0, 5);
-    expectedResponse.forEach((user) => delete user.password);
     expect(users).to.be.deep.equal({
-      users: expectedResponse,
+      users: expectedUsers.slice(0, 5),
       nextPage: 2,
       previousPage: null,
       totalRecords: 10,
@@ -114,10 +158,14 @@ describe('#get users list query', () => {
   });
 
   it('should query 5 final users correctly when limit parameter is 5 and page is 2', async () => {
-    const mockUsers = generateUsers(10);
-    await prisma.user.createMany({
-      data: mockUsers,
-    });
+    const { mockCreateUsersData, expectedUsers } = generateUsers(10);
+    await Promise.all(
+      mockCreateUsersData.map(async (createUserData) => {
+        await prisma.user.create({
+          data: createUserData,
+        });
+      }),
+    );
 
     const token = generateToken(1, false);
     const {
@@ -126,10 +174,8 @@ describe('#get users list query', () => {
       },
     } = await getUsersQueryRequest(2, token, 5);
 
-    const expectedResponse = mockUsers.slice(5, 10);
-    expectedResponse.forEach((user) => delete user.password);
     expect(users).to.be.deep.equal({
-      users: expectedResponse,
+      users: expectedUsers.slice(5, 10),
       nextPage: null,
       previousPage: 1,
       totalRecords: 10,
@@ -168,10 +214,14 @@ describe('#get users list query', () => {
   });
 
   it('should return error with invalid page passed (page greater than current totalPages)', async () => {
-    const mockUsers = generateUsers(10);
-    await prisma.user.createMany({
-      data: mockUsers,
-    });
+    const { mockCreateUsersData } = generateUsers(10);
+    await Promise.all(
+      mockCreateUsersData.map(async (createUserData) => {
+        await prisma.user.create({
+          data: createUserData,
+        });
+      }),
+    );
 
     const token = generateToken(1, false);
     const { data } = await getUsersQueryRequest(2, token);

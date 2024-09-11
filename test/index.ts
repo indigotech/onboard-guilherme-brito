@@ -19,5 +19,6 @@ after(async () => {
 });
 
 afterEach(async () => {
+  await prisma.address.deleteMany();
   await prisma.user.deleteMany();
 });

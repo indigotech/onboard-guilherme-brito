@@ -19,6 +19,9 @@ const findUserById = async (id: number) => {
       where: {
         id,
       },
+      include: {
+        addresses: true,
+      },
     });
     return user;
   } catch {

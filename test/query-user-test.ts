@@ -14,6 +14,15 @@ const getUserQueryRequest = (userId: number, token?: string) => {
         email
         id
         name
+        addresses {
+          State
+          city
+          complement
+          id
+          street
+          streetNumber
+          postalCode
+        }
       }
     }`;
 
@@ -24,6 +33,25 @@ const getUserQueryRequest = (userId: number, token?: string) => {
   };
 
   return axios.post(LOCAL_SERVER_URL, graphqlQueryRequestBody, { headers: { Authorization: token } });
+};
+
+const mockCreateUserData = {
+  name: 'guilherme',
+  email: 'teste@taqtile.com.br',
+  password: 'senha123',
+  birthDate: '22/02/2000',
+  addresses: {
+    create: [
+      {
+        id: 1,
+        city: 'São Paulo',
+        postalCode: '05036-165',
+        State: 'São Paulo',
+        street: 'Rua teste 123',
+        streetNumber: 98,
+      },
+    ],
+  },
 };
 
 describe('#get user query', () => {
@@ -42,9 +70,7 @@ describe('#get user query', () => {
   });
 
   it('should query a user with the correct information', async () => {
-    const { id } = await prisma.user.create({
-      data: { name: 'guilherme', email: 'teste@taqtile.com.br', password: 'senha123', birthDate: '22/02/2000' },
-    });
+    const { id } = await prisma.user.create({ data: mockCreateUserData });
 
     const token = generateToken(id, false);
     const {
@@ -58,13 +84,22 @@ describe('#get user query', () => {
       name: 'guilherme',
       email: 'teste@taqtile.com.br',
       birthDate: '22/02/2000',
+      addresses: [
+        {
+          id: 1,
+          city: 'São Paulo',
+          postalCode: '05036-165',
+          State: 'São Paulo',
+          street: 'Rua teste 123',
+          streetNumber: 98,
+          complement: null,
+        },
+      ],
     });
   });
 
   it('should return error with invalid user id', async () => {
-    const { id } = await prisma.user.create({
-      data: { name: 'guilherme', email: 'teste@taqtile.com.br', password: 'senha123', birthDate: '22/02/2000' },
-    });
+    const { id } = await prisma.user.create({ data: mockCreateUserData });
 
     const token = generateToken(id, false);
     const { data } = await getUserQueryRequest(-1, token);
